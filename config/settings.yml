@@ -1,0 +1,17 @@
+defaults: &defaults
+  file_storage: file
+  redis_url: "localhost:6379"
+
+development:
+  <<: *defaults
+
+test:
+  <<: *defaults
+
+staging:
+  <<: *defaults
+  redis_url: <%= ENV["REDISTOGO_URL"] %>
+
+production:
+  <<: *defaults
+  redis_url: <%= ENV["REDISTOGO_URL"] %>
