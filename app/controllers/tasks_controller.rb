@@ -7,13 +7,13 @@ class TasksController < ApplicationController
   end
 
   def create
-    task = current_user.tasks.create params[:task]
+    task = current_user.tasks.create task_params
     render json: task
   end
 
   def update
     task = current_user.tasks.find params[:id]
-    task.update_attributes params[:task]
+    task.update_attributes task_params
     render json: task
   end
 
@@ -21,6 +21,12 @@ class TasksController < ApplicationController
     task = current_user.tasks.find params[:id]
     task.destroy
     render json: true
+  end
+
+  private
+
+  def task_params
+    params.require(:task).permit(:name, :state, :description, :due_at, :order_index)
   end
 
 end

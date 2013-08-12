@@ -1,11 +1,12 @@
 class User::Authenticator
 
-  def self.authenticate(email, password)
+  def self.authenticate(email, password, session)
     user = User.by_email(email).first
     return nil unless user
     hashed_password = BCrypt::Engine.hash_secret(password, user.password_salt)
     return nil unless user.password_hash == hashed_password
     issue_auth_key!(user)
+    session[:auth_key] = user.auth_key
     user
   end
 

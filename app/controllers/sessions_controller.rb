@@ -1,7 +1,8 @@
 class SessionsController < ApplicationController
 
   def create
-    @user = User::Authenticator.authenticate(params[:email], params[:password])
+    @user = User::Authenticator.authenticate(
+      params[:email], params[:password], session)
     if @user
       render json: @user
     else
