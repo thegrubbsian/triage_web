@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 20130809232850) do
     t.float    "order_index"
   end
 
+  add_index "tasks", ["user_id", "order_index"], name: "index_tasks_on_user_id_and_order_index", unique: true, using: :btree
   add_index "tasks", ["user_id"], name: "index_tasks_on_user_id", using: :btree
 
   create_table "users", force: true do |t|

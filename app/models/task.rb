@@ -5,11 +5,12 @@ class Task < ActiveRecord::Base
   belongs_to :user
 
   validates_inclusion_of :state, in: STATES
+  validates_presence_of :order_index
 
   scope :in_order, -> { order("order_index DESC") }
 
   before_validation :set_default_state
-  before_create :set_order_index
+  before_validation :set_order_index
 
   def set_order_index
     self.order_index ||= ((user.tasks.maximum(:order_index) || 0) + 1)
