@@ -35,7 +35,7 @@ namespace :deploy do
 
   def set_heroku_account
     system_try_and_fail "heroku accounts:set #{HEROKU_ACCOUNT}"
-    puts "******** Heroku account set to #{HEROKU_ACCOUNT}"
+    message "Heroku account set to #{HEROKU_ACCOUNT}"
   end
 
   def run_deploy
@@ -45,40 +45,54 @@ namespace :deploy do
   end
 
   def deploy_tag(timestamp)
-    puts "******** Tagging with #{timestamp} for #{@env} deploy"
+    message "Tagging with #{timestamp} for #{@env} deploy"
     system_try_and_fail "git tag #{timestamp}"
     system_try_and_fail "git push origin master --tags"
-    puts "******** Tag #{timestamp} pushed to origin"
+    message "Tag #{timestamp} pushed to origin"
     system_try_and_fail "git push #{@repo} master -f"
-    puts "******** Tag #{timestamp} pushed to heroku: #{@repo}"
+    message "Tag #{timestamp} pushed to heroku: #{@repo}"
   end
 
   def deploy_branch(timestamp)
-    puts "******** Branching with #{timestamp} for #{@env} deploy"
+    message "Branching with #{timestamp} for #{@env} deploy"
     system_try_and_fail "git checkout -b #{timestamp}"
     system_try_and_fail "git push origin #{timestamp}"
-    puts "******** Branch #{timestamp} pushed to origin"
+    message "Branch #{timestamp} pushed to origin"
     system_try_and_fail "git push #{@repo} #{timestamp}:master -f"
-    puts "******** Branch #{timestamp} pushed to heroku: #{@repo}"
+    message "Branch #{timestamp} pushed to heroku: #{@repo}"
     system_try_and_fail "git checkout master"
   end
 
   def run_specs
-    puts "******** Running specs"
+    message "Running specs"
     TEST_COMMANDS.each do |command|
       system_try_and_fail command
     end
-    puts "******** All specs passing"
+    message "All specs passing"
+  end
+
+  def backup_database
+    message "Backing up database"
+    system_try_and_fail "heroku pgbackups:capture --expire --app=#{@repo}"
+  end
+
+  def migrate_database
+    message "Migrate database"
+    system_try_and_fail "heroku run rake db:migrate --app=#{@repo}"
   end
 
   def deploy
     check_master_branch
     check_pending_changes
     set_heroku_account
-    puts "******** Deploying to #{@env}"
+    message "Deploying to #{@env}"
     run_specs
     run_deploy
-    puts "******** Successful deployment to #{@env}"
+    message "Successful deployment to #{@env}"
+  end
+
+  def message(msg)
+    message "******** #{msg}"
   end
 
   task :staging do
@@ -86,12 +100,14 @@ namespace :deploy do
     @strategy = "tag"
     @env = "staging"
     deploy
+    migrate_database
   end
 
   task :production do
     @repo = PRODUCTION_REMOTE
     @strategy = "branch"
     @env = "production"
+    backup_database
     deploy
   end
 
