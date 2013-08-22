@@ -6,6 +6,10 @@ gem "pg"
 gem "rails", "4.0.0"
 gem "settingslogic", "2.0.9"
 
+group :assets do
+  gem "uglifier"
+end
+
 group :production do
   gem "unicorn"
 end
