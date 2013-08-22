@@ -2,7 +2,7 @@ class User < ActiveRecord::Base
 
   has_many :tasks
 
-  attr_accessor :password, :password_confirmation
+  attr_accessor :password
 
   scope :by_email, ->(email) { where(email: email) }
 
@@ -10,8 +10,7 @@ class User < ActiveRecord::Base
     User.where(auth_key: auth_key).first || NullUser.new
   end
 
-  validates_confirmation_of :password
-  validates_presence_of :password, :on => :create
+  validates_presence_of :password, on: :create
   validate :name, presence: true
   validate :email, presence: true, uniqueness: true
 
