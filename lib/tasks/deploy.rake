@@ -92,7 +92,7 @@ namespace :deploy do
   end
 
   def log(msg)
-    log "******** #{msg}"
+    puts "******** #{msg}"
   end
 
   task :staging do
