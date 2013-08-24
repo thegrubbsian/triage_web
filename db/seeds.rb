@@ -1,7 +1,7 @@
 User.delete_all
 Task.delete_all
 
-user = User.create(name: "JC Grubbs", email: "jc@devmynd.com", password: "pass1234", password_confirmation: "pass1234")
+user = User.create(name: "JC Grubbs", email: "jc@devmynd.com", password: "pass1234")
 
 [
   "Write up SOW for Acme, Inc.",
